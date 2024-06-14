@@ -3,8 +3,9 @@ var randomstring=require('randomstring').generate()
 
 const orders_controller={
     Create_order :async(req,res)=>{
-        const {id_customer,status,total_amount}=req.body
+        const {status,total_amount}=req.body
         try{
+            const id_customer=req.user.id_customer
             var id_order="".concat("OD",randomstring);
             const [rows]=await pool.query(`INSERT INTO orders(id_order,id_customer,status,total_amount) VALUES(?,?,?,?)`,[id_order,id_customer,status,total_amount])
             res.status(200).json(rows)
@@ -15,7 +16,8 @@ const orders_controller={
     },
     Get_orders :async(req,res)=>{
         try{
-            const [rows]=await pool.query(`SELECT * FROM orders`)
+            const id_customer=req.user.id_customer
+            const [rows]=await pool.query(`SELECT * FROM order WHERE id_customer = ?`,[id_customer])
             res.status(200).json(rows)
         }
         catch(err){
